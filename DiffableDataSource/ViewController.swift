@@ -22,6 +22,9 @@ enum OutlineItem: Hashable {
 }
 
 class ViewController: UIViewController {
+    typealias Snapshot = NSDiffableDataSourceSectionSnapshot<OutlineItem>
+    typealias DataSource = UICollectionViewDiffableDataSource<String, OutlineItem>
+    
     var collectionView: UICollectionView = {
         let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         let layout = UICollectionViewCompositionalLayout.list(using: configuration)
@@ -40,7 +43,7 @@ class ViewController: UIViewController {
     private func initVariable() {
         collectionView.dataSource = dataSource
 
-        var sectionSnapshot = NSDiffableDataSourceSectionSnapshot<OutlineItem>()
+        var sectionSnapshot = Snapshot()
         
         let dataArray: [Parent] = [
             .init(item: "First", childItems: Array(0 ... 4).map { Child(item: String($0)) }),
@@ -72,7 +75,7 @@ class ViewController: UIViewController {
             .setAnchor(\.trailingAnchor, .equal, to: view.trailingAnchor)
     }
     
-    func makeDataSource() -> UICollectionViewDiffableDataSource<String, OutlineItem> {
+    func makeDataSource() -> DataSource {
         let parentRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Parent> { cell, _, item in
                 
             var content = cell.defaultContentConfiguration()
@@ -92,7 +95,7 @@ class ViewController: UIViewController {
             cell.accessories = [.reorder(displayed: .always)]
         }
             
-        return UICollectionViewDiffableDataSource<String, OutlineItem>(
+        return DataSource(
             collectionView: collectionView,
             cellProvider: { collectionView, indexPath, item in
                 switch item {
